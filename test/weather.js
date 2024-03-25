@@ -207,4 +207,29 @@ describe('OpenWeatherMap ', function(){
 		});
 	});
 
+	describe("Retrieve data with one call 3.0 : ", function () {
+
+		// NOTE This test will fail if the API key supplied does not have a one call subscription.
+		it('Should successfully call the OneCall API', function (done) {
+			weather.setAPPID(myAPPID);
+			weather.setCoordinate(50.0467656, 20.0048731);
+			weather.getWeatherOneCall(function (err, smart) {
+				if (err) {
+					console.log(err.stack);
+				}
+				// Correct assertions for nested properties
+				chai.assert.nestedProperty(smart, 'current.temp');
+				chai.assert.nestedProperty(smart, 'current.humidity');
+				chai.assert.nestedProperty(smart, 'current.pressure');
+
+            // Since description is within an array, ensure the array exists and has at least one item
+            chai.expect(smart.current.weather).to.be.an('array').that.is.not.empty;
+            // Assert the description property of the first object in the weather array
+            chai.assert.nestedProperty(smart.current.weather[0], 'description');
+            done();
+        });
+    });
+});
+
+
 });
